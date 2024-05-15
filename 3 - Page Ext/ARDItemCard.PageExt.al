@@ -1,3 +1,7 @@
+/*
+    Customized in BC AL Journey #4
+    https://aardvarklabs.blog/2024/05/01/first-steps-on-a-coding-journey/
+*/
 namespace AardvarkLabs;
 using Microsoft.Inventory.Item;
 
