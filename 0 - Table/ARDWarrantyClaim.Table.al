@@ -17,31 +17,27 @@ table 50001 ARDWarrantyClaim
             ToolTip = 'Warranty Claim Number';
             AutoIncrement = true;
         }
-        field(2; "CustomerNo."; Code[20])
-        {
-            Caption = 'Customer No.';
-            ToolTip = 'Associated Customer Number';
-            /*
-                Customized in BC AL Journey #20
-            */
-            trigger OnLookup()
-            var
-                Customer: Record Customer;
-                CustomerLookup: Page "Customer Lookup";
-            begin
-                //Set the filter to only show customers that are not blocked
-                Customer.SetFilter(Blocked, '%1', Enum::"Customer Blocked"::" ");
+field(2; "CustomerNo."; Code[20])
+{
+    Caption = 'Customer No.';
+    ToolTip = 'Associated Customer Number';
+    /*
+        Customized in BC AL Journey #20
+    */
+    trigger OnLookup()
+    var
+        Customer: Record Customer;
+    begin
+        //Set the filter to only show customers that are not blocked
+        Customer.SetFilter(Blocked, '%1', Enum::"Customer Blocked"::" ");
 
-                //Open the Customer Lookup page and set the filter to the selected customer
-                if Page.RunModal(page::"Customer Lookup", Customer) <> Action::LookupOK then exit;
+        //Open the Customer Lookup page and set the filter to the selected customer
+        if Page.RunModal(page::"Customer Lookup", Customer) <> Action::LookupOK then exit;
 
-                //Find the selected customer
-                CustomerLookup.SetSelectionFilter(Customer);
-                Customer.FindFirst();
-                //Set the CustomerNo. field to the selected customer
-                Rec."CustomerNo." := Customer."No.";
-            end;
-        }
+        //Set the CustomerNo. field to the selected customer
+        Rec."CustomerNo." := Customer."No.";
+    end;
+}
         field(3; Details; Text[255])
         {
             Caption = 'Details';
