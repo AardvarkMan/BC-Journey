@@ -8,7 +8,7 @@ table 50001 ARDWarrantyClaim
     Caption = 'WarrantyClaim';
     DataClassification = CustomerContent;
     DataCaptionFields = "WarrantyClaimNo.", "CustomerNo.";
-    
+
     fields
     {
         field(1; "WarrantyClaimNo."; Integer)
@@ -34,7 +34,7 @@ table 50001 ARDWarrantyClaim
 
                 //Open the Customer Lookup page and set the filter to the selected customer
                 if Page.RunModal(page::"Customer Lookup", Customer) <> Action::LookupOK then exit;
-                
+
                 //Find the selected customer
                 CustomerLookup.SetSelectionFilter(Customer);
                 Customer.FindFirst();
@@ -56,6 +56,9 @@ table 50001 ARDWarrantyClaim
         {
             Caption = 'Resolved';
             ToolTip = 'Indicate if the Claim has been resolved';
+            /*
+                Customized in BC AL Journey #20
+            */
             trigger OnValidate()
             begin
                 if Rec.Resolved then
@@ -70,7 +73,7 @@ table 50001 ARDWarrantyClaim
     }
     keys
     {
-        key(PK; "WarrantyClaimNo.","CustomerNo.")
+        key(PK; "WarrantyClaimNo.", "CustomerNo.")
         {
             Clustered = true;
         }
