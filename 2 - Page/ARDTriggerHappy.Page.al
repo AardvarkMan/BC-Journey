@@ -29,12 +29,31 @@ page 50005 ARD_TriggerHappy
                 {
                     Visible = ShowTerritoryCode;
                 }
+                field(ARD_CustomerLookup; CustomerLookup)
+                {
+                    Caption = 'Customer Lookup';
+                    ToolTip = 'Lookup Customer';
+                    ApplicationArea = All;
+                    Lookup = true;
+
+
+                    trigger onlookup(var Text: Text): Boolean
+                    var
+                        CustomerRec: Record Customer;
+                    begin
+                        Message('Card Field: onlookup: Rec: %1, Text: %2', Rec."No.", Text);
+                        if Page.RunModal(Page::Ard_TriggerHappyQuery, CustomerRec) = Action::LookupOK then begin
+                            CustomerLookup := CustomerRec.Name;
+                        end;
+                    end;
+                }
             }
         }
     }
 
     var
         Settings: Record ARD_Settings;
+        CustomerLookup: Text[50];
         ShowTerritoryCode: Boolean;
 
     trigger OnInit()
@@ -64,12 +83,6 @@ page 50005 ARD_TriggerHappy
         Message('Card: OnAfterGetCurrRecord: Rec: %1, XRec: %2', Rec."No.", XRec."No.");
     end;
 
-    trigger OnNextRecord(Steps: Integer): Integer
-    begin
-        Message('Card: OnNextRecord: Steps: %1', Steps);
-        exit(Steps);
-    end;
-
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
         Message('Card: OnNewRecord: Rec: %1, XRec: %2, BelowxRec: %3', Rec."No.", XRec."No.", BelowxRec);
@@ -93,5 +106,26 @@ page 50005 ARD_TriggerHappy
     trigger OnClosePage()
     begin
         Message('Card: OnClosePage: Rec: %1, XRec: %2', Rec."No.", XRec."No.");
+    end;
+
+    trigger OnNextRecord(Steps: Integer): Integer
+    begin
+        Message('Card: OnNextRecord: Steps: %1', Steps);
+        exit(Steps);
+    end;
+
+    /*     trigger OnFindRecord(Which: Text): Boolean
+        begin
+            Message('Card: OnFindRecord: Which: %1, Rec: %2, XRec: %3', Which, Rec."No.", XRec."No.");
+        end; */
+
+    trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+    begin
+        Message('Card: OnPageBackgroundTaskCompleted: TaskId: %1, Results: %2', TaskId, Results);
+    end;
+
+    trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
+    begin
+        Message('Card: OnPageBackgroundTaskError: TaskId: %1, ErrorCode: %2, ErrorText: %3, ErrorCallStack: %4', TaskId, ErrorCode, ErrorText, ErrorCallStack);
     end;
 }
