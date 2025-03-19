@@ -1,5 +1,6 @@
 namespace AardvarkLabs.BCJourney;
 using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Intrastat;
 
 page 50005 ARD_TriggerHappy
 {
@@ -16,14 +17,33 @@ page 50005 ARD_TriggerHappy
             {
                 Caption = 'General';
 
-                field("No."; Rec."No.")
-                {
-                }
-                field(Name; Rec.Name)
-                {
-                }
+field("No."; Rec."No.")
+{
+    trigger OnAssistEdit()
+    begin
+        Message('Card Field: OnAssistEdit: Rec: %1, XRec: %2', Rec."No.", xRec."No.");
+        if Rec.AssistEdit(xRec) then
+            CurrPage.Update();
+    end;
+}
+field(Name; Rec.Name)
+{
+    trigger OnDrillDown()
+    begin
+        Message('Card Field: OnDrillDown: Rec: %1, XRec: %2', Rec."No.", xRec."No.");
+        Page.RunModal(Page::"Customer Card", Rec);
+    end;
+}
                 field("No. Series"; Rec."No. Series")
                 {
+                }
+                field("State Inscription"; rec."State Inscription")
+                {
+                    trigger OnValidate()
+                    begin
+                        Message('Card Field: OnValidate: Rec: %1, XRec: %2', Rec."State Inscription", xRec."State Inscription");
+                        Rec."State Inscription" := Rec."State Inscription".ToUpper();
+                    end;
                 }
                 field("Territory Code"; Rec."Territory Code")
                 {
@@ -42,9 +62,13 @@ page 50005 ARD_TriggerHappy
                         CustomerRec: Record Customer;
                     begin
                         Message('Card Field: onlookup: Rec: %1, Text: %2', Rec."No.", Text);
-                        if Page.RunModal(Page::Ard_TriggerHappyQuery, CustomerRec) = Action::LookupOK then begin
+                        if Page.RunModal(Page::Ard_TriggerHappyQuery, CustomerRec) = Action::LookupOK then
                             CustomerLookup := CustomerRec.Name;
-                        end;
+                    end;
+
+                    trigger OnAfterLookup(Selected: RecordRef)
+                    begin
+                        Message('Card Field: OnAfterLookup: Rec: %1, Selected: %2', Rec."No.", Selected);
                     end;
                 }
             }
@@ -53,7 +77,7 @@ page 50005 ARD_TriggerHappy
 
     var
         Settings: Record ARD_Settings;
-        CustomerLookup: Text[50];
+        CustomerLookup: Text[100];
         ShowTerritoryCode: Boolean;
 
     trigger OnInit()
